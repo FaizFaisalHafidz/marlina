@@ -52,6 +52,7 @@ export interface Siswa {
   no_hp?: string | null
   email?: string | null
   foto?: string | null
+  nomor_orang_tua?: string | null
   created_at: string
   updated_at: string
   user?: {
@@ -198,10 +199,19 @@ export function SiswaDataTable({ data, onEdit, onDelete, onAdd }: DataTableProps
     },
     {
       accessorKey: "no_hp",
-      header: "No. HP",
+      header: "No. HP Siswa",
       cell: ({ row }) => (
         <div className="font-mono text-sm">
           {row.getValue("no_hp") || "-"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "nomor_orang_tua",
+      header: "No. HP Orang Tua",
+      cell: ({ row }) => (
+        <div className="font-mono text-sm">
+          {row.getValue("nomor_orang_tua") || "-"}
         </div>
       ),
     },

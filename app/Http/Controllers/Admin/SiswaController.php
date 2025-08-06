@@ -42,6 +42,7 @@ class SiswaController extends Controller
             'no_hp' => 'nullable|string|max:20',
             'email' => 'required|email|unique:siswa,email|max:255',
             'foto' => 'nullable|string|max:255',
+            'nomor_orang_tua' => 'nullable|string|max:20',
         ]);
 
         // Get role siswa
@@ -81,6 +82,7 @@ class SiswaController extends Controller
             'no_hp' => 'nullable|string|max:20',
             'email' => 'required|email|max:255|unique:siswa,email,' . $siswa->id,
             'foto' => 'nullable|string|max:255',
+            'nomor_orang_tua' => 'nullable|string|max:20',
         ]);
 
         // Update user account if exists

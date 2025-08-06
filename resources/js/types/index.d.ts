@@ -61,6 +61,13 @@ export interface Siswa {
     alamat: string;
     tanggal_lahir: string;
     jenis_kelamin: 'L' | 'P';
+    tempat_lahir?: string;
+    nama_ayah?: string;
+    nama_ibu?: string;
+    no_hp?: string;
+    email?: string;
+    foto?: string;
+    nomor_orang_tua?: string;
     user?: User;
     created_at: string;
     updated_at: string;

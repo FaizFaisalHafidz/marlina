@@ -156,7 +156,7 @@ Add this line:
 
 ```bash
 # Laravel Scheduler - runs every minute
-* * * * * cd /var/www/html/project-marlina && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/marlina && php artisan schedule:run >> /dev/null 2>&1
 
 # Optional: Log scheduler output for debugging
 # * * * * * cd /var/www/html/project-marlina && php artisan schedule:run >> /var/log/laravel-scheduler.log 2>&1

@@ -36,6 +36,7 @@ export function SiswaFormDialog({ open, onOpenChange, siswa, mode }: SiswaFormDi
     no_hp: '',
     email: '',
     foto: '',
+    nomor_orang_tua: '',
   })
 
   // Update form data when siswa or mode changes
@@ -54,6 +55,7 @@ export function SiswaFormDialog({ open, onOpenChange, siswa, mode }: SiswaFormDi
         no_hp: siswa.no_hp || '',
         email: siswa.email || '',
         foto: siswa.foto || '',
+        nomor_orang_tua: siswa.nomor_orang_tua || '',
       })
     } else if (mode === 'create') {
       reset()
@@ -228,7 +230,7 @@ export function SiswaFormDialog({ open, onOpenChange, siswa, mode }: SiswaFormDi
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="no_hp">No. HP</Label>
+              <Label htmlFor="no_hp">No. HP Siswa</Label>
               <Input
                 id="no_hp"
                 type="text"
@@ -238,6 +240,18 @@ export function SiswaFormDialog({ open, onOpenChange, siswa, mode }: SiswaFormDi
               />
               {errors.no_hp && <p className="text-sm text-red-500">{errors.no_hp}</p>}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="nomor_orang_tua">No. HP Orang Tua</Label>
+            <Input
+              id="nomor_orang_tua"
+              type="text"
+              value={data.nomor_orang_tua}
+              onChange={(e) => setData('nomor_orang_tua', e.target.value)}
+              placeholder="Contoh: 081234567890"
+            />
+            {errors.nomor_orang_tua && <p className="text-sm text-red-500">{errors.nomor_orang_tua}</p>}
           </div>
 
           <div className="space-y-2">
