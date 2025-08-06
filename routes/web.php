@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\PembayaranController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\OtpAuthController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,6 +14,15 @@ use Inertia\Inertia;
 // })->name('home');
 
 Route::redirect('/', '/dashboard')->name('home');
+
+// OTP Authentication Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login/phone', [OtpAuthController::class, 'showPhoneForm'])->name('otp.phone.form');
+    Route::post('/login/send-otp', [OtpAuthController::class, 'sendOtp'])->name('otp.send');
+    Route::get('/login/verify', [OtpAuthController::class, 'showVerifyForm'])->name('otp.verify.form');
+    Route::post('/login/verify-otp', [OtpAuthController::class, 'verifyOtp'])->name('otp.verify');
+    Route::post('/login/resend-otp', [OtpAuthController::class, 'resendOtp'])->name('otp.resend');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
@@ -27,13 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('pembayaran/{pembayaran}/update-status', [PembayaranController::class, 'updateStatus'])
             ->name('pembayaran.update-status');
 
-        // Status Pembayaran Routes
+        // Status Pembayaran Routes (Read-Only untuk Admin)
         Route::get('/status-pembayaran', [App\Http\Controllers\Admin\StatusPembayaranController::class, 'index'])
             ->name('status-pembayaran.index');
-        Route::put('/status-pembayaran/{pembayaran}/update-status', [App\Http\Controllers\Admin\StatusPembayaranController::class, 'updateStatus'])
-            ->name('status-pembayaran.update');
-        Route::post('/status-pembayaran/bulk-update', [App\Http\Controllers\Admin\StatusPembayaranController::class, 'bulkUpdateStatus'])
-            ->name('status-pembayaran.bulk-update');
         Route::get('/status-pembayaran/export', [App\Http\Controllers\Admin\StatusPembayaranController::class, 'export'])
             ->name('status-pembayaran.export');
 
@@ -127,6 +134,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('riwayat.download');
         Route::get('/riwayat/export', [App\Http\Controllers\Siswa\RiwayatController::class, 'export'])
             ->name('riwayat.export');
+    });
+
+    // Testing WhatsApp Notification Routes (For Development Only)
+    Route::prefix('test-notifications')->group(function () {
+        Route::get('/device-status', [NotificationController::class, 'testDeviceStatus']);
+        Route::post('/send-reminder', [NotificationController::class, 'testSendReminder']);
+        Route::post('/send-confirmation', [NotificationController::class, 'testSendConfirmation']);
+        Route::post('/send-message', [NotificationController::class, 'testSendMessage']);
     });
 });
 

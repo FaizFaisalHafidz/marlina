@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
+use App\Exports\StatusPembayaranExport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StatusPembayaranController extends Controller
 {
@@ -66,41 +69,6 @@ class StatusPembayaranController extends Controller
     }
 
     /**
-     * Update pembayaran status
-     */
-    public function updateStatus(Request $request, Pembayaran $pembayaran)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,disetujui,ditolak',
-            'keterangan' => 'nullable|string|max:500'
-        ]);
-
-        $pembayaran->update([
-            'status' => $request->status
-        ]);
-
-        return back()->with('success', "Status pembayaran berhasil diubah menjadi {$request->status}");
-    }
-
-    /**
-     * Bulk update status
-     */
-    public function bulkUpdateStatus(Request $request)
-    {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'exists:pembayaran,id',
-            'status' => 'required|in:pending,disetujui,ditolak',
-            'keterangan' => 'nullable|string|max:500'
-        ]);
-
-        $updated = Pembayaran::whereIn('id', $request->ids)
-            ->update(['status' => $request->status]);
-
-        return back()->with('success', "Berhasil mengubah status {$updated} pembayaran");
-    }
-
-    /**
      * Get payment statistics
      */
     private function getStatistics()
@@ -125,9 +93,70 @@ class StatusPembayaranController extends Controller
      */
     public function export(Request $request)
     {
-        // Implementation for exporting data (Excel/PDF)
-        // You can use packages like Laravel Excel or DomPDF
+        $filters = [
+            'status' => $request->status,
+            'kelas' => $request->kelas,
+            'tanggal_dari' => $request->tanggal_dari,
+            'tanggal_sampai' => $request->tanggal_sampai,
+            'search' => $request->search
+        ];
+
+        $format = $request->get('format', 'excel'); // Default Excel
+        $filename = 'status-pembayaran-' . date('Y-m-d-His');
+
+        if ($format === 'pdf') {
+            return $this->exportToPdf($filters, $filename);
+        }
+
+        // Export to Excel
+        return Excel::download(new StatusPembayaranExport($filters), $filename . '.xlsx');
+    }
+
+    private function exportToPdf($filters, $filename)
+    {
+        $query = Pembayaran::with(['siswa', 'rekening'])
+            ->orderBy('created_at', 'desc');
+
+        // Apply filters (same as Excel export)
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['kelas'])) {
+            $query->whereHas('siswa', function($q) use ($filters) {
+                $q->where('kelas', $filters['kelas']);
+            });
+        }
+
+        if (!empty($filters['tanggal_dari'])) {
+            $query->whereDate('tanggal_pembayaran', '>=', $filters['tanggal_dari']);
+        }
+
+        if (!empty($filters['tanggal_sampai'])) {
+            $query->whereDate('tanggal_pembayaran', '<=', $filters['tanggal_sampai']);
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->whereHas('siswa', function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+
+        $pembayaranList = $query->get();
+
+        $data = [
+            'title' => 'Laporan Status Pembayaran',
+            'pembayaran_list' => $pembayaranList,
+            'filters' => $filters,
+            'export_date' => Carbon::now()->format('d/m/Y H:i'),
+            'logo_url' => 'https://neoflash.sgp1.cdn.digitaloceanspaces.com/logo-sirnamiskin.png'
+        ];
+
+        $pdf = Pdf::loadView('exports.status-pembayaran-pdf', $data);
+        $pdf->setPaper('a4', 'landscape');
         
-        return response()->json(['message' => 'Export feature will be implemented']);
+        return $pdf->download($filename . '.pdf');
     }
 }

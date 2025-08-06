@@ -32,6 +32,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Merdeka No. 123, Jakarta Selatan',
                 'no_hp' => '081234567001',
                 'email' => 'ahmad.fauzi@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Siti Nurhaliza',
@@ -45,6 +46,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Sudirman No. 45, Bandung',
                 'no_hp' => '081234567002',
                 'email' => 'siti.nurhaliza@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Muhammad Rizki',
@@ -58,6 +60,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Pahlawan No. 67, Surabaya',
                 'no_hp' => '081234567003',
                 'email' => 'muhammad.rizki@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Dewi Lestari',
@@ -71,6 +74,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Malioboro No. 89, Yogyakarta',
                 'no_hp' => '081234567004',
                 'email' => 'dewi.lestari@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Andi Pratama',
@@ -84,6 +88,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Veteran No. 12, Makassar',
                 'no_hp' => '081234567005',
                 'email' => 'andi.pratama@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Rina Kartika',
@@ -97,6 +102,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Gatot Subroto No. 34, Medan',
                 'no_hp' => '081234567006',
                 'email' => 'rina.kartika@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Dian Permata',
@@ -110,6 +116,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Pemuda No. 56, Semarang',
                 'no_hp' => '081234567007',
                 'email' => 'dian.permata@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Fajar Ramadhan',
@@ -123,6 +130,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Sudirman No. 78, Palembang',
                 'no_hp' => '081234567008',
                 'email' => 'fajar.ramadhan@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Maya Sari',
@@ -136,6 +144,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Gajah Mada No. 90, Denpasar',
                 'no_hp' => '081234567009',
                 'email' => 'maya.sari@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
             [
                 'nama' => 'Rendi Saputra',
@@ -149,6 +158,7 @@ class SiswaSeeder extends Seeder
                 'alamat' => 'Jl. Ahmad Yani No. 112, Pontianak',
                 'no_hp' => '081234567010',
                 'email' => 'rendi.saputra@student.madrasah.com',
+                'nomor_orang_tua' => '089656519477',
             ],
         ];
 

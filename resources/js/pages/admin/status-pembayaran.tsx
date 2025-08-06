@@ -1,28 +1,29 @@
+import PaymentProof from '@/components/payment-proof';
 import { PembayaranStatusDialog } from '@/components/pembayaran-status-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/components/ui/table';
 import AuthenticatedLayout from '@/layouts/app-layout';
 import { Pembayaran } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import {
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Download,
-  Filter,
-  Search,
-  Users,
-  XCircle
+    CheckCircle,
+    Clock,
+    DollarSign,
+    Download,
+    Filter,
+    Search,
+    Users,
+    XCircle
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -309,6 +310,7 @@ export default function StatusPembayaran({
                     <TableHead>Kelas</TableHead>
                     <TableHead>Jumlah</TableHead>
                     <TableHead>Tanggal</TableHead>
+                    <TableHead className="text-center">Bukti</TableHead>
                     <TableHead>Bank</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Aksi</TableHead>
@@ -317,7 +319,7 @@ export default function StatusPembayaran({
                 <TableBody>
                   {pembayaran.data.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                      <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                         Tidak ada data pembayaran ditemukan
                       </TableCell>
                     </TableRow>
@@ -333,6 +335,14 @@ export default function StatusPembayaran({
                           {formatCurrency(item.jumlah)}
                         </TableCell>
                         <TableCell>{formatDate(item.tanggal_pembayaran)}</TableCell>
+                        <TableCell className="text-center">
+                          <PaymentProof
+                            bukti_pembayaran={item.bukti_pembayaran}
+                            siswa_nama={item.siswa?.nama}
+                            jumlah={Number(item.jumlah)}
+                            showEmpty={true}
+                          />
+                        </TableCell>
                         <TableCell>{item.rekening?.nama_bank || 'N/A'}</TableCell>
                         <TableCell>
                           <Badge 
@@ -344,29 +354,38 @@ export default function StatusPembayaran({
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            {item.status === 'pending' && (
+                            {/* Hanya tampilkan tombol untuk Bendahara */}
+                            {routePrefix === 'bendahara' && (
                               <>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleStatusUpdate(item)}
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
-                                  Update
-                                </Button>
+                                {item.status === 'pending' && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleStatusUpdate(item)}
+                                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    Update
+                                  </Button>
+                                )}
+                                {item.status !== 'pending' && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleStatusUpdate(item)}
+                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  >
+                                    <Clock className="h-4 w-4 mr-1" />
+                                    Ubah
+                                  </Button>
+                                )}
                               </>
                             )}
-                            {item.status !== 'pending' && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleStatusUpdate(item)}
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                              >
-                                <Clock className="h-4 w-4 mr-1" />
-                                Ubah
-                              </Button>
+                            {/* Untuk Admin, hanya tampilkan status tanpa tombol edit */}
+                            {routePrefix === 'admin' && (
+                              <Badge variant="secondary" className="text-xs">
+                                Read Only
+                              </Badge>
                             )}
                           </div>
                         </TableCell>

@@ -83,11 +83,14 @@ export function ValidasiStatusDialog({
 
   const getJenisPembayaranText = (pembayaran: Pembayaran) => {
     if (!pembayaran.details || pembayaran.details.length === 0) {
-      return '-'
+      // Fallback to direct field if no details
+      return pembayaran.jenis_pembayaran || '-'
     }
-    return pembayaran.details.map(detail => 
-      detail.jenisPembayaran?.nama_jenis || 'Unknown'
-    ).join(', ')
+    return pembayaran.details.map(detail => {
+      // In Laravel JSON response, the relationship name stays as snake_case
+      const jenisPembayaran = detail.jenis_pembayaran
+      return jenisPembayaran?.kode || 'Unknown'
+    }).join(', ')
   }
 
   return (

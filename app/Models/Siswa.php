@@ -23,6 +23,7 @@ class Siswa extends Model
         'no_hp',
         'email',
         'foto',
+        'nomor_orang_tua',
     ];
 
     protected $casts = [

@@ -82,8 +82,12 @@ export interface Pembayaran {
     tanggal_pembayaran: string;
     status: 'pending' | 'disetujui' | 'ditolak';
     metode_pembayaran_id: number;
+    jenis_pembayaran?: string; // Direct field for payment type
+    metode_pembayaran?: string; // Direct field for payment method
     keterangan?: string;
     bukti_transfer?: string;
+    bukti_pembayaran?: string; // New field for payment proof
+    bukti_pembayaran_url?: string; // URL accessor for payment proof
     divalidasi_oleh?: number;
     tanggal_validasi?: string;
     siswa?: Siswa;
@@ -100,8 +104,7 @@ export interface DetailPembayaran {
     jenis_pembayaran_id: number;
     jumlah: string | number;
     keterangan?: string;
-    jenisPembayaran?: JenisPembayaran;
-    jenis_pembayaran?: JenisPembayaran; // Laravel snake_case version
+    jenis_pembayaran?: JenisPembayaran; // Laravel keeps snake_case in JSON
     created_at: string;
     updated_at: string;
 }

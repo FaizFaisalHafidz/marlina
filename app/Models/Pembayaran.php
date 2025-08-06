@@ -19,6 +19,8 @@ class Pembayaran extends Model
         'metode_pembayaran_id',
         'keterangan',
         'bukti_transfer',
+        'bukti_pembayaran', // New field for payment proof
+        'jenis_pembayaran', // Direct field for payment type
         'divalidasi_oleh',
         'tanggal_validasi',
     ];
@@ -77,5 +79,58 @@ class Pembayaran extends Model
     public function validator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'divalidasi_oleh');
+    }
+
+    /**
+     * Accessor untuk URL bukti pembayaran
+     */
+    public function getBuktiPembayaranUrlAttribute()
+    {
+        if ($this->bukti_pembayaran) {
+            return asset('storage/' . $this->bukti_pembayaran);
+        }
+        return null;
+    }
+
+    /**
+     * Check if payment has proof
+     */
+    public function hasProof(): bool
+    {
+        return !empty($this->bukti_pembayaran);
+    }
+
+    /**
+     * Get status badge class
+     */
+    public function getStatusBadgeAttribute()
+    {
+        switch ($this->status) {
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'approved':
+                return 'bg-green-100 text-green-800';
+            case 'rejected':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    }
+
+    /**
+     * Get status text
+     */
+    public function getStatusTextAttribute()
+    {
+        switch ($this->status) {
+            case 'pending':
+                return 'Menunggu Validasi';
+            case 'approved':
+                return 'Disetujui';
+            case 'rejected':
+                return 'Ditolak';
+            default:
+                return ucfirst($this->status);
+        }
     }
 }

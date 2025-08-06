@@ -1,3 +1,4 @@
+import PaymentProof from '@/components/payment-proof';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -330,6 +331,7 @@ export default function RiwayatSiswa({
                         <TableHead>Tanggal</TableHead>
                         <TableHead>Jenis Pembayaran</TableHead>
                         <TableHead>Jumlah</TableHead>
+                        <TableHead className="text-center">Bukti</TableHead>
                         <TableHead>Bank</TableHead>
                         <TableHead>Status</TableHead>
                       </TableRow>
@@ -346,19 +348,26 @@ export default function RiwayatSiswa({
                           <TableCell>
                             <div className="space-y-1">
                               {item.details?.map((detail, idx) => (
-                                <div key={detail.id} className="flex items-center gap-2">
+                                <div key={detail.id} className="text-sm">
                                   <Badge variant="outline" className="text-xs">
-                                    {detail.jenisPembayaran?.kode}
+                                    {detail.jenis_pembayaran?.kode || 'Unknown'}
                                   </Badge>
-                                  <span className="text-sm">
-                                    {detail.jenisPembayaran?.nama_jenis}
-                                  </span>
                                 </div>
-                              )) || '-'}
+                              )) || (
+                                <span className="text-sm">{item.jenis_pembayaran || '-'}</span>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="font-semibold">
                             {formatCurrency(item.jumlah)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <PaymentProof
+                              bukti_pembayaran={item.bukti_pembayaran}
+                              siswa_nama={siswa.nama}
+                              jumlah={Number(item.jumlah)}
+                              showEmpty={true}
+                            />
                           </TableCell>
                           <TableCell>
                             <div className="text-sm">

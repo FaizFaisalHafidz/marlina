@@ -1,21 +1,22 @@
+import PaymentProof from '@/components/payment-proof'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table'
 import { ValidasiStatusDialog } from '@/components/validasi-status-dialog'
 import AppLayout from '@/layouts/app-layout'
 import { type BreadcrumbItem, type Pembayaran, type Siswa } from '@/types'
 import { Head, router } from '@inertiajs/react'
-import { CheckCircle, Clock, Download, Filter, Search, TrendingUp, Users } from 'lucide-react'
+import { CheckCircle, Clock, Filter, Search, TrendingUp, Users } from 'lucide-react'
 import { useState } from 'react'
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -145,11 +146,14 @@ export default function ValidasiTransaksi({ pembayaran, siswa, stats, filters }:
 
   const getJenisPembayaranText = (pembayaran: Pembayaran) => {
     if (!pembayaran.details || pembayaran.details.length === 0) {
-      return '-'
+      // Fallback to direct field if no details
+      return pembayaran.jenis_pembayaran || '-'
     }
-    return pembayaran.details.map(detail => 
-      detail.jenisPembayaran?.nama_jenis || 'Unknown'
-    ).join(', ')
+    return pembayaran.details.map(detail => {
+      // In Laravel JSON response, the relationship name stays as snake_case
+      const jenisPembayaran = detail.jenis_pembayaran
+      return jenisPembayaran?.kode || 'Unknown'
+    }).join(', ')
   }
 
   return (
@@ -163,14 +167,14 @@ export default function ValidasiTransaksi({ pembayaran, siswa, stats, filters }:
             <h1 className="text-2xl font-bold text-green-800">Validasi Transaksi</h1>
             <p className="text-gray-600 mt-1">Kelola dan validasi pembayaran siswa</p>
           </div>
-          <Button 
+          {/* <Button 
             onClick={handleExport}
             className="bg-green-600 hover:bg-green-700"
             size="sm"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Data
-          </Button>
+          </Button> */}
         </div>
 
         {/* Statistics Cards */}
@@ -349,6 +353,7 @@ export default function ValidasiTransaksi({ pembayaran, siswa, stats, filters }:
                     <TableHead>Pembayaran</TableHead>
                     <TableHead className="text-right">Jumlah</TableHead>
                     <TableHead>Tanggal</TableHead>
+                    <TableHead className="text-center">Bukti</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-center">Validasi</TableHead>
                   </TableRow>
@@ -356,7 +361,7 @@ export default function ValidasiTransaksi({ pembayaran, siswa, stats, filters }:
                 <TableBody>
                   {pembayaran.data.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                      <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                         Tidak ada data transaksi ditemukan
                       </TableCell>
                     </TableRow>
@@ -384,6 +389,14 @@ export default function ValidasiTransaksi({ pembayaran, siswa, stats, filters }:
                         </TableCell>
                         <TableCell>
                           {formatDate(item.tanggal_pembayaran)}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <PaymentProof
+                            bukti_pembayaran={item.bukti_pembayaran}
+                            siswa_nama={item.siswa?.nama}
+                            jumlah={Number(item.jumlah)}
+                            showEmpty={true}
+                          />
                         </TableCell>
                         <TableCell>
                           <Badge 

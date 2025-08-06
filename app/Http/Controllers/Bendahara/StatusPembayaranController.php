@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bendahara;
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
+use App\Events\PaymentStatusUpdated;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -75,9 +76,14 @@ class StatusPembayaranController extends Controller
             'keterangan' => 'nullable|string|max:500'
         ]);
 
+        $oldStatus = $pembayaran->status;
+
         $pembayaran->update([
             'status' => $request->status
         ]);
+
+        // Trigger WhatsApp notification event
+        PaymentStatusUpdated::dispatch($pembayaran, $oldStatus, $request->status);
 
         return back()->with('success', "Status pembayaran berhasil diubah menjadi {$request->status}");
     }

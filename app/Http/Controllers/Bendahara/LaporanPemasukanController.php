@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Bendahara;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
+use App\Exports\LaporanPemasukanExport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanPemasukanController extends Controller
 {
@@ -131,7 +134,73 @@ class LaporanPemasukanController extends Controller
      */
     public function export(Request $request)
     {
-        // Implementation for exporting report (Excel/PDF)
-        return response()->json(['message' => 'Export feature will be implemented']);
+        $filters = [
+            'jenis_pembayaran' => $request->jenis_pembayaran,
+            'kelas' => $request->kelas,
+            'tanggal_dari' => $request->tanggal_dari,
+            'tanggal_sampai' => $request->tanggal_sampai,
+            'search' => $request->search
+        ];
+
+        $format = $request->get('format', 'excel'); // Default Excel
+        $filename = 'laporan-pemasukan-' . date('Y-m-d-His');
+
+        if ($format === 'pdf') {
+            return $this->exportToPdf($filters, $filename);
+        }
+
+        // Export to Excel
+        return Excel::download(new LaporanPemasukanExport($filters), $filename . '.xlsx');
+    }
+
+    private function exportToPdf($filters, $filename)
+    {
+        $query = Pembayaran::with(['siswa', 'rekening'])
+            ->where('status', 'approved')
+            ->orderBy('tanggal_pembayaran', 'desc');
+
+        // Apply filters (same logic as main controller)
+        if (!empty($filters['jenis_pembayaran'])) {
+            $query->where('jenis_pembayaran', $filters['jenis_pembayaran']);
+        }
+
+        if (!empty($filters['kelas'])) {
+            $query->whereHas('siswa', function($q) use ($filters) {
+                $q->where('kelas', $filters['kelas']);
+            });
+        }
+
+        if (!empty($filters['tanggal_dari'])) {
+            $query->whereDate('tanggal_pembayaran', '>=', $filters['tanggal_dari']);
+        }
+
+        if (!empty($filters['tanggal_sampai'])) {
+            $query->whereDate('tanggal_pembayaran', '<=', $filters['tanggal_sampai']);
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->whereHas('siswa', function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+
+        $pembayaranList = $query->get();
+        $totalPemasukan = $pembayaranList->sum('jumlah');
+
+        $data = [
+            'title' => 'Laporan Pemasukan',
+            'pembayaran_list' => $pembayaranList,
+            'total_pemasukan' => $totalPemasukan,
+            'filters' => $filters,
+            'export_date' => Carbon::now()->format('d/m/Y H:i'),
+            'logo_url' => 'https://neoflash.sgp1.cdn.digitaloceanspaces.com/logo-sirnamiskin.png'
+        ];
+
+        $pdf = Pdf::loadView('exports.laporan-pemasukan-pdf', $data);
+        $pdf->setPaper('a4', 'landscape');
+        
+        return $pdf->download($filename . '.pdf');
     }
 }
