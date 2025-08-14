@@ -15,12 +15,38 @@ class SiswaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $siswa = Siswa::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        $query = Siswa::with('user')->orderBy('created_at', 'desc');
+        
+        // Filter berdasarkan kelas jika ada
+        if ($request->has('kelas') && $request->kelas != '') {
+            $query->where('kelas', $request->kelas);
+        }
+        
+        // Filter berdasarkan pencarian nama atau NISN
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('nisn', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        $siswa = $query->paginate(15);
+        
+        // Dapatkan semua kelas yang tersedia untuk filter
+        $kelasList = Siswa::select('kelas')
+            ->distinct()
+            ->orderBy('kelas')
+            ->pluck('kelas');
         
         return Inertia::render('admin/siswa', [
-            'siswa' => $siswa
+            'siswa' => $siswa,
+            'kelasList' => $kelasList,
+            'filters' => [
+                'kelas' => $request->kelas,
+                'search' => $request->search,
+            ]
         ]);
     }
 

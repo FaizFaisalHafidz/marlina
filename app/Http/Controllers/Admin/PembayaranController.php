@@ -17,23 +17,56 @@ class PembayaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $pembayaran = Pembayaran::with(['siswa', 'rekening', 'details.jenisPembayaran'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = Pembayaran::with(['siswa', 'rekening', 'details.jenisPembayaran'])
+            ->orderBy('created_at', 'desc');
+        
+        // Filter berdasarkan kelas jika ada
+        if ($request->has('kelas') && $request->kelas != '') {
+            $query->whereHas('siswa', function($q) use ($request) {
+                $q->where('kelas', $request->kelas);
+            });
+        }
+        
+        // Filter berdasarkan status jika ada
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        
+        // Filter berdasarkan pencarian nama siswa atau NISN
+        if ($request->has('search') && $request->search != '') {
+            $query->whereHas('siswa', function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('nisn', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        $pembayaran = $query->paginate(15);
         
         $siswa = Siswa::orderBy('nama', 'asc')->get();
         $rekening = Rekening::orderBy('nama_bank', 'asc')->get();
         $jenisPembayaran = JenisPembayaran::where('is_active', true)
             ->orderBy('nama_jenis', 'asc')
             ->get();
+            
+        // Dapatkan semua kelas yang tersedia untuk filter
+        $kelasList = Siswa::select('kelas')
+            ->distinct()
+            ->orderBy('kelas')
+            ->pluck('kelas');
         
         return Inertia::render('admin/pembayaran', [
             'pembayaran' => $pembayaran,
             'siswa' => $siswa,
             'rekening' => $rekening,
-            'jenisPembayaran' => $jenisPembayaran
+            'jenisPembayaran' => $jenisPembayaran,
+            'kelasList' => $kelasList,
+            'filters' => [
+                'kelas' => $request->kelas,
+                'status' => $request->status,
+                'search' => $request->search,
+            ]
         ]);
     }
 

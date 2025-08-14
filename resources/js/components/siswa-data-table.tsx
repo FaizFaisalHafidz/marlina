@@ -27,7 +27,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
     Table,
     TableBody,
@@ -285,15 +284,10 @@ export function SiswaDataTable({ data, onEdit, onDelete, onAdd }: DataTableProps
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Cari siswa..."
-          value={(table.getColumn("nama")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("nama")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm focus:ring-green-500 focus:border-green-500"
-        />
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-muted-foreground">
+          Menampilkan {data.length} siswa
+        </div>
         <div className="ml-auto flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -315,7 +309,17 @@ export function SiswaDataTable({ data, onEdit, onDelete, onAdd }: DataTableProps
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {column.id === 'nama' ? 'Nama' :
+                       column.id === 'nisn' ? 'NISN' :
+                       column.id === 'jenis_kelamin' ? 'Jenis Kelamin' :
+                       column.id === 'kelas' ? 'Kelas' :
+                       column.id === 'nama_ayah' ? 'Nama Ayah' :
+                       column.id === 'nama_ibu' ? 'Nama Ibu' :
+                       column.id === 'email' ? 'Email' :
+                       column.id === 'no_hp' ? 'No. HP Siswa' :
+                       column.id === 'nomor_orang_tua' ? 'No. HP Orang Tua' :
+                       column.id === 'alamat' ? 'Alamat' :
+                       column.id}
                     </DropdownMenuCheckboxItem>
                   )
                 })}
@@ -371,38 +375,14 @@ export function SiswaDataTable({ data, onEdit, onDelete, onAdd }: DataTableProps
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-gray-500"
                 >
-                  No results.
+                  Tidak ada data siswa ditemukan.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   )
