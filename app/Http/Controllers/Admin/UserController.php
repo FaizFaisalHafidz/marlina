@@ -20,6 +20,20 @@ class UserController extends Controller
         $users = User::with('role')->latest()->get();
         $roles = Role::all();
         
+        // Log users data for debugging
+        \Log::info('Users index data:', [
+            'users_count' => $users->count(),
+            'users_sample' => $users->take(2)->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'email_verified_at' => $user->email_verified_at,
+                    'role' => $user->role ? $user->role->nama_role : null
+                ];
+            })
+        ]);
+        
         return Inertia::render('admin/users', [
             'users' => $users,
             'roles' => $roles
@@ -107,6 +121,51 @@ class UserController extends Controller
         $user->update($updateData);
 
         return redirect()->back()->with('success', 'User berhasil diperbarui!');
+    }
+
+    /**
+     * Toggle email verification status
+     */
+    public function toggleVerification(string $id)
+    {
+        try {
+            \Log::info('Toggle verification called for user ID: ' . $id);
+            
+            $user = User::findOrFail($id);
+            \Log::info('User found:', ['user_id' => $user->id, 'current_verification' => $user->email_verified_at]);
+            
+            // Prevent changing current user's verification status
+            if ($user->id === Auth::id()) {
+                \Log::warning('Attempted to change own verification status', ['user_id' => $user->id, 'auth_id' => Auth::id()]);
+                return redirect()->back()->with('error', 'Tidak dapat mengubah status verifikasi akun Anda sendiri.');
+            }
+            
+            // Toggle verification status
+            if ($user->email_verified_at) {
+                $user->update(['email_verified_at' => null]);
+                $message = 'Status verifikasi user berhasil dinonaktifkan!';
+                \Log::info('User verification disabled', ['user_id' => $user->id]);
+            } else {
+                $user->update(['email_verified_at' => now()]);
+                $message = 'Status verifikasi user berhasil diaktifkan!';
+                \Log::info('User verification enabled', ['user_id' => $user->id]);
+            }
+
+            // Refresh user data to verify update
+            $user->refresh();
+            \Log::info('User after update:', ['user_id' => $user->id, 'new_verification' => $user->email_verified_at]);
+
+            return redirect()->back()->with('success', $message);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in toggleVerification:', [
+                'user_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**

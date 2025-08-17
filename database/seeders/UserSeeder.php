@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Aliefya Ainul Fikri',
                 'email' => 'admin@madrasah.com',
-                'no_telepon' => '081234567890',
+                // 'no_telepon' => '081234567890',
                 'password' => Hash::make('password123'),
                 'role_id' => $adminRole->id,
                 'email_verified_at' => now(),
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Nani Muharomah',
                 'email' => 'bendahara@madrasah.com',
-                'no_telepon' => '081234567891',
+                // 'no_telepon' => '081234567891',
                 'password' => Hash::make('password123'),
                 'role_id' => $bendaharaRole->id,
                 'email_verified_at' => now(),
@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Iik Abdul Chalik',
                 'email' => 'kepala@madrasah.com',
-                'no_telepon' => '081234567892',
+                // 'no_telepon' => '081234567892',
                 'password' => Hash::make('password123'),
                 'role_id' => $kepalaRole->id,
                 'email_verified_at' => now(),

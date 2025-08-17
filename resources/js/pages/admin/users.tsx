@@ -28,6 +28,8 @@ interface Props {
 }
 
 export default function AdminUsers({ users, roles }: Props) {
+    console.log('AdminUsers render:', { users: users.slice(0, 2), roles })
+    
     const [dialogOpen, setDialogOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create')
@@ -57,6 +59,30 @@ export default function AdminUsers({ users, roles }: Props) {
         }
     }
 
+    const handleToggleVerification = (userId: number, isVerified: boolean) => {
+        const action = isVerified ? 'menonaktifkan' : 'mengaktifkan'
+        console.log('Toggle verification:', { userId, isVerified, action })
+        
+        if (confirm(`Apakah Anda yakin ingin ${action} verifikasi user ini?`)) {
+            router.patch(`/admin/users/${userId}/toggle-verification`, {}, {
+                onSuccess: (page) => {
+                    console.log('Toggle verification success:', page)
+                    const message = isVerified ? 'Verifikasi user berhasil dinonaktifkan!' : 'Verifikasi user berhasil diaktifkan!'
+                    toast.success(message)
+                    // Force reload page to ensure fresh data
+                    window.location.reload()
+                },
+                onError: (errors) => {
+                    console.error('Toggle verification error:', errors)
+                    toast.error('Terjadi kesalahan saat mengubah status verifikasi user.')
+                },
+                onFinish: () => {
+                    console.log('Toggle verification finished')
+                }
+            })
+        }
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Data Pengguna" />
@@ -76,6 +102,7 @@ export default function AdminUsers({ users, roles }: Props) {
                         onAdd={handleAdd}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onToggleVerification={handleToggleVerification}
                     />
                 </div>
 

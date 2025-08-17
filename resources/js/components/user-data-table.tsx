@@ -1,16 +1,16 @@
 "use client"
 
 import {
-    ColumnDef,
-    ColumnFiltersState,
-    SortingState,
-    VisibilityState,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 import * as React from "react"
@@ -19,22 +19,22 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 
 export interface User {
@@ -56,9 +56,10 @@ interface DataTableProps {
   onEdit: (user: User) => void
   onDelete: (userId: number) => void
   onAdd: () => void
+  onToggleVerification: (userId: number, isVerified: boolean) => void
 }
 
-export function UserDataTable({ data, onEdit, onDelete, onAdd }: DataTableProps) {
+export function UserDataTable({ data, onEdit, onDelete, onAdd, onToggleVerification }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -186,6 +187,12 @@ export function UserDataTable({ data, onEdit, onDelete, onAdd }: DataTableProps)
                 Copy email
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => onToggleVerification(user.id, !!user.email_verified_at)}
+                className={user.email_verified_at ? "text-amber-600 hover:text-amber-700" : "text-blue-600 hover:text-blue-700"}
+              >
+                {user.email_verified_at ? "Nonaktifkan verifikasi" : "Aktifkan verifikasi"}
+              </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => onEdit(user)}
                 className="text-green-600 hover:text-green-700"

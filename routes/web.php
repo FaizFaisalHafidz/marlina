@@ -31,6 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
+        Route::patch('users/{user}/toggle-verification', [UserController::class, 'toggleVerification'])
+            ->name('users.toggle-verification');
         Route::resource('siswa', SiswaController::class);
         Route::resource('pembayaran', PembayaranController::class);
         
