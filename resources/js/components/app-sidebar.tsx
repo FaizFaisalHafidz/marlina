@@ -3,7 +3,7 @@ import { NavMain } from '@/components/nav-main';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BarChart3, Building, CheckCircle, CreditCard, Database, FileText, HelpCircle, LayoutGrid, Receipt, Shield, TrendingUp, UserCheck, UserCog, Users } from 'lucide-react';
+import { BarChart3, Building, CheckCircle, CreditCard, Crown, Database, FileText, HelpCircle, LayoutGrid, Receipt, Shield, TrendingUp, UserCheck, UserCog, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // Function to get navigation items based on user role
@@ -17,6 +17,127 @@ const getNavItemsByRole = (role: string): NavItem[] => {
     ];
 
     switch (role) {
+        case 'Super Admin':
+            return [
+                ...baseItems,
+                {
+                    title: 'Admin Panel',
+                    icon: Shield,
+                    items: [
+                        {
+                            title: 'Data Role',
+                            href: '/admin/roles',
+                            icon: Shield,
+                        },
+                        {
+                            title: 'Data Pengguna',
+                            href: '/admin/users',
+                            icon: UserCog,
+                        },
+                        {
+                            title: 'Data Siswa',
+                            href: '/admin/siswa',
+                            icon: Users,
+                        },
+                        {
+                            title: 'Data Pembayaran',
+                            href: '/admin/pembayaran',
+                            icon: Receipt,
+                        },
+                        {
+                            title: 'Status Pembayaran',
+                            href: '/admin/status-pembayaran',
+                            icon: CheckCircle,
+                        },
+                    ],
+                },
+                {
+                    title: 'Bendahara Panel',
+                    icon: Building,
+                    items: [
+                        {
+                            title: 'Status Pembayaran',
+                            href: '/bendahara/status-pembayaran',
+                            icon: CheckCircle,
+                        },
+                        {
+                            title: 'Validasi Transaksi',
+                            href: '/bendahara/validasi-transaksi',
+                            icon: UserCheck,
+                        },
+                        {
+                            title: 'Data Rekening',
+                            href: '/bendahara/rekening',
+                            icon: Building,
+                        },
+                    ],
+                },
+                {
+                    title: 'Kepala Madrasah',
+                    icon: Crown,
+                    items: [
+                        {
+                            title: 'Status Pembayaran',
+                            href: '/kepala/status-pembayaran',
+                            icon: CheckCircle,
+                        },
+                        {
+                            title: 'Laporan Pemasukan',
+                            href: '/kepala/laporan-pemasukan',
+                            icon: TrendingUp,
+                        },
+                        {
+                            title: 'Laporan Pengeluaran',
+                            href: '/kepala/laporan-pengeluaran',
+                            icon: BarChart3,
+                        },
+                    ],
+                },
+                {
+                    title: 'Siswa Panel',
+                    icon: Users,
+                    items: [
+                        {
+                            title: 'Tagihan Siswa',
+                            href: '/siswa/tagihan',
+                            icon: Receipt,
+                        },
+                        {
+                            title: 'Riwayat Pembayaran',
+                            href: '/siswa/riwayat',
+                            icon: FileText,
+                        },
+                    ],
+                },
+                {
+                    title: 'Laporan Admin',
+                    icon: FileText,
+                    items: [
+                        {
+                            title: 'Laporan Pemasukan',
+                            href: '/admin/laporan-pemasukan',
+                            icon: TrendingUp,
+                        },
+                        {
+                            title: 'Laporan Pengeluaran',
+                            href: '/admin/laporan-pengeluaran',
+                            icon: BarChart3,
+                        },
+                    ],
+                },
+                {
+                    title: 'Bantuan',
+                    icon: HelpCircle,
+                    items: [
+                        {
+                            title: 'Tentang Aplikasi',
+                            href: '/tentang',
+                            icon: HelpCircle,
+                        },
+                    ],
+                },
+            ];
+
         case 'Admin':
             return [
                 ...baseItems,

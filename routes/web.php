@@ -27,7 +27,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
-    // Admin Routes
+    // Super Admin Routes - menggunakan middleware super-admin untuk bisa akses semua
+    // Super Admin bisa akses semua route admin, bendahara, kepala, dan siswa
+    
+    // Admin Routes - Super Admin bisa akses dengan middleware super-admin
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);

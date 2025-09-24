@@ -56,4 +56,28 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    /**
+     * Check if user is Super Admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role && $this->role->nama_role === 'Super Admin';
+    }
+
+    /**
+     * Check if user has specific role
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role && $this->role->nama_role === $roleName;
+    }
+
+    /**
+     * Get user role name
+     */
+    public function getRoleName(): ?string
+    {
+        return $this->role ? $this->role->nama_role : null;
+    }
 }
